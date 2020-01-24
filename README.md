@@ -14,7 +14,7 @@ You may however need to download the .iso specific to your version (mount it) an
 
 
 ## Usage
-Make all changes as required (such as locations, eg: `d-i mirror/country string Netherlands` in ``ui-input.http/pressed_debian10-buster.cfg``) and thereafter commence with build using `packer` CLI:
+Make all changes as required (hostnames, etc.) and thereafter commence with build using `packer` CLI:
 
 ```bash
 packer validate ubuntu-16.04.2-xenial-xerus.json && \
