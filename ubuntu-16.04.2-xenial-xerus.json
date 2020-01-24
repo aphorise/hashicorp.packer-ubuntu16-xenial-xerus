@@ -1,0 +1,91 @@
+{
+"variables":
+{
+	"name": "vbox-ubuntu-16.04.2",
+	"ubuntu_version": "16.04.2",
+	"build_name": "ubuntu-16.04.2",
+	"cpu_cores_build": "1",
+	"memory_build": "2048",
+	"disk_size": "32768",
+	"headless": "false",
+	"iso_checksum_type": "sha256",
+	"iso_url": "http://releases.ubuntu.com/{{user `ubuntu_version`}}/ubuntu-{{user `ubuntu_version`}}-server-amd64.iso",
+	"iso_checksum": "737ae7041212c628de5751d15c3016058b0e833fdc32e7420209b76ca3d0a535",
+	"ssh_username": "vagrant",
+	"ssh_password": "vagrant",
+	"ssh_port": "22",
+	"domain": "local.domain",
+	"hostname": "local.hostname"
+},
+"builders":
+[{
+	"type": "virtualbox-iso",
+	"name": "vbox-{{ user `build_name` }}",
+	"vm_name": "{{ user `build_name` }}-vbox",
+	"guest_os_type": "Ubuntu_64",
+	"guest_additions_mode": "upload",
+	"headless": "{{user `headless`}}",
+	"http_directory": "ui-input.http",
+	"vboxmanage":
+	[
+		[ "modifyvm", "{{.Name}}", "--memory", "{{user `memory_build`}}" ],
+		[ "modifyvm", "{{.Name}}", "--cpus", "{{user `cpu_cores_build`}}" ]
+	],
+	"virtualbox_version_file": ".vbox_version",
+	"disk_size": "{{user `disk_size`}}",
+	"hard_drive_interface": "sata",
+	"hard_drive_discard": true,	
+	"iso_checksum": "{{user `iso_checksum`}}",
+	"iso_checksum_type": "{{user `iso_checksum_type`}}",
+	"iso_url": "{{user `iso_url`}}",
+	"ssh_username": "{{user `ssh_password`}}",
+	"ssh_password": "{{user `ssh_username`}}",
+	"ssh_wait_timeout": "20m",
+	"ssh_port": "{{user `ssh_port`}}",
+	"boot_wait": "5s",
+	"boot_command":
+	[
+		"<enter><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+		"preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/pressed_ubuntu16.04.02-xenial-xerus.cfg ",
+		"debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+		"hostname={{ user `build_name` }} ",
+		"fb=false debconf/fronten=d=noninteractive ",
+		"keyboard-configuration/modelcode=SKIP ",
+		"keyboard-configuration/layout=USA ",
+		"keyboard-configuration/variant=USA ",
+		"console-setup/ask_detect=false ",
+		"netcfg/get_domain={{user `domain`}} ",
+		"netcfg/get_hostname={{user `hostname`}} ",
+		"initrd=/install/initrd.gz -- <enter>"
+	],
+	"shutdown_command": "echo 'vagrant' | sudo -S poweroff",
+	"post_shutdown_delay": "2m"
+}],
+"provisioners":
+[{
+	"type": "shell",
+	"execute_command": "echo 'vagrant' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+	"scripts":
+	[
+		"os-scripts.ud/1.sshd.sh",
+		"os-scripts.ud/2.sudoers.sh",
+		"os-scripts.ud/3.install_common_tools.sh",
+		"os-scripts.ud/31.ubuntu_grub.sh",
+		"os-scripts.ud/4.vagrant.sh",
+		"os-scripts.ud/5.vbaddguest.sh",
+		"os-scripts.ud/6.cleanup.sh"
+	]
+}],
+"post-processors":
+[{
+	"type": "vagrant",
+	"output": "{{.BuildName}}.box",
+	"compression_level": "9",
+	"keep_input_artifact": false
+}]
+}
