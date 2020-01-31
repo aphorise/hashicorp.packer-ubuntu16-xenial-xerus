@@ -24,6 +24,7 @@ packer build ubuntu-16.04.2-xenial-xerus.json
 
 The resulting Vagrant Base **\*.box** file will be produced in the root of the repository (where no issues / errors).
 
+See [vagrantup.com/aphorise/boxes/ubuntu16](https://app.vagrantup.com/aphorise/boxes/ubuntu16) for generated image.
 
 ## Notes
 Make adjustments to use appropriate mirrors (which are insecure ftp or http presently) where intended to extend to make proper use beyond a mere practise / training.

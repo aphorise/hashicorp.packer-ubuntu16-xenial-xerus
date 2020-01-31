@@ -5,5 +5,5 @@ set -eu ; # abort this script when a command fails or an unset variable is used.
 
 apt-get update ;
 
-# Install NFS for Vagrant, culr & other common CLI needed
+# Install NFS for Vagrant, curl & other common CLI needed
 apt-get -yq install nfs-common curl jq ;
